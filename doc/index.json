@@ -1,0 +1,11 @@
+{  
+  "install": {
+    "title": "Manual Installation"
+  },
+  "config": {
+    "title": "Configuration Guide"
+  },
+  "api": {
+    "title": "Using the Controller"
+  }
+}

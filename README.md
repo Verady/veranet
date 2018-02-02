@@ -1,2 +1,4 @@
-# veranet
-veranet protocol implementation and network daemon
+Veranet
+=======
+
+TODO

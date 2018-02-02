@@ -1,0 +1,15 @@
+version: '2'
+services:
+  orcd:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./bin:/root/veranet/bin
+      - ./lib:/root/veranet/lib
+      - ./test:/root/veranet/test
+      - ./index.js:/root/veranet/index.js
+      - ./node_modules:/root/veranet/node_modules
+      - ./package.json:/root/veranet/package.json
+    ports:
+      - "127.0.0.1:8372:8372"
