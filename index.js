@@ -45,9 +45,6 @@ module.exports.Node = require('./lib/node');
 /** {@link Rules} */
 module.exports.Rules = require('./lib/rules');
 
-/** {@link Transport} */
-module.exports.Transport = require('./lib/transport');
-
 /** {@link module:orc/constants} */
 module.exports.constants = require('./lib/constants');
 
