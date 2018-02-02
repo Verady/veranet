@@ -94,7 +94,7 @@ persist state between runs. Note that stable releases are tagged and the
 
 ### License
 
-Veranet  
+Veranet - decentralized platform for multi-currency blockchain accounting 
 Copyright (C) 2018  Verady, LLC  
 
 This program is free software: you can redistribute it and/or modify
