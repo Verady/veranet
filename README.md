@@ -33,7 +33,7 @@ This will generate a fresh configuration and setup the data directory. Modify
 the created configuration at `~/.config/veranet/config` as desired (see the 
 {@tutorial config}) and send `SIGINT` to the process (`Ctrl+C`).
  
-Once you are finished, run the ORC container again, but expose the RPC to the 
+Once you are finished, run the Veranet container again, but expose the RPC to the 
 host, mount the data directory, allocate a pseudo TTY, detach the process, and 
 tell docker to keep it running (even starting automatically on system boot).
 
