@@ -37,8 +37,6 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN git clone https://github.com/verady/veranet /root/veranet; \
-    git fetch --tags; \
-    git checkout $(git describe --tags `git rev-list --tags --max-count=1`); \
     cd /root/veranet && npm install --unsafe-perm --production
 VOLUME ["/root/.config/veranet"]
 EXPOSE 8372

@@ -1,9 +1,12 @@
 version: '2'
 services:
-  orcd:
+  veranet:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
+    environment:
+      - veranet_ControlSockEnabled=0
+      - veranet_ControlPortEnabled=1
     volumes:
       - ./bin:/root/veranet/bin
       - ./lib:/root/veranet/lib
@@ -12,4 +15,5 @@ services:
       - ./node_modules:/root/veranet/node_modules
       - ./package.json:/root/veranet/package.json
     ports:
-      - "127.0.0.1:8372:8372"
+      - "8372:8372"
+      - "127.0.0.1:8373:8373"

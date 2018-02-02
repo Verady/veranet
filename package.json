@@ -33,6 +33,7 @@
     "node": "^8.9.3"
   },
   "dependencies": {
+    "boscar": "^2.0.0",
     "bunyan": "^1.8.12",
     "bunyan-rotating-file-stream": "^1.6.3",
     "commander": "^2.9.0",
@@ -59,7 +60,7 @@
     "coveralls": "^2.11.2",
     "eslint": "^3.14.0",
     "gh-pages": "^0.9.0",
-    "ink-docstrap": "bookchin/docstrap",
+    "ink-docstrap": "^1.3.2",
     "istanbul": "^1.1.0-alpha.1",
     "jsdoc": "^3.4.0",
     "mocha": "^2.2.4",

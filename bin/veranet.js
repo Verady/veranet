@@ -2,6 +2,7 @@
 
 'use strict';
 
+const assert = require('assert');
 const async = require('async');
 const program = require('commander');
 const hdkey = require('hdkey');
@@ -17,6 +18,7 @@ const daemon = require('daemon');
 const pem = require('pem');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
+const boscar = require('boscar');
 
 
 program.version(`
@@ -44,7 +46,7 @@ if (program.datadir && !program.config) {
 const config = require('rc')('veranet', options(program.datadir), argv);
 const kad = require('kad');
 
-let xprivkey, parentkey, childkey, identity, logger;
+let xprivkey, parentkey, childkey, identity, logger, controller, node;
 
 // Generate a private extended key if it does not exist
 if (!fs.existsSync(config.PrivateExtendedKeyPath)) {
@@ -140,10 +142,40 @@ async function _init() {
 }
 
 function killChildrenAndExit() {
-  logger.info('exiting, killing child services');
+  logger.info('exiting, killing child services, cleaning up');
   npid.remove(config.DaemonPidFilePath);
   process.removeListener('exit', killChildrenAndExit);
+
+  if (controller && parseInt(config.ControlSockEnabled)) {
+    controller.server.close();
+  }
+
   process.exit(0);
+}
+
+function registerControlInterface() {
+  assert(!(parseInt(config.ControlPortEnabled) &&
+           parseInt(config.ControlSockEnabled)),
+  'ControlSock and ControlPort cannot both be enabled');
+
+  controller = new boscar.Server({
+    AUDIT_SELECTION: function(options, callback) {
+      node.createSnapshot(options, callback);
+    },
+    REGISTER_MODULE: function(chain, endpoint, callback) {
+      node.registerModule(chain, endpoint, callback);
+    }
+  });
+
+  if (parseInt(config.ControlPortEnabled)) {
+    logger.info('binding controller to port ' + config.ControlPort);
+    controller.listen(parseInt(config.ControlPort), '0.0.0.0');
+  }
+
+  if (parseInt(config.ControlSockEnabled)) {
+    logger.info('binding controller to path ' + config.ControlSock);
+    controller.listen(config.ControlSock);
+  }
 }
 
 function init() {
@@ -167,7 +199,7 @@ function init() {
   const transport = new kad.HTTPSTransport({ key, cert, ca });
 
   // Initialize protocol implementation
-  const node = new veranet.Node({
+  node = new veranet.Node({
     logger,
     transport,
     contact,
@@ -242,6 +274,7 @@ function init() {
       `node listening on local port ${config.NodeListenPort} ` +
       `and exposed at https://${node.contact.hostname}:${node.contact.port}`
     );
+    registerControlInterface();
     async.retry({
       times: Infinity,
       interval: 60000

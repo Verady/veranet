@@ -3,13 +3,12 @@
     "template": "node_modules/ink-docstrap/template"
   },
   "templates": {
-    "systemName": "ORC",
-    "copyright":  "Copyright 2017 Counterpoint Hackerspace",
+    "systemName": "Veranet",
+    "copyright":  "Copyright 2018 Verady, LLC",
     "includeDate": false,
     "navType": "vertical",
     "logoFile": "",
-    "theme": "granax",
-    "logoFile": "img/orc.png",
+    "theme": "yeti",
     "linenums": false,
     "collapseSymbols": false,
     "inverseNav": false,

@@ -45,14 +45,14 @@ module.exports.Node = require('./lib/node');
 /** {@link Rules} */
 module.exports.Rules = require('./lib/rules');
 
-/** {@link module:orc/constants} */
+/** {@link module:veranet/constants} */
 module.exports.constants = require('./lib/constants');
 
-/** {@link module:orc/utils} */
+/** {@link module:veranet/utils} */
 module.exports.utils = require('./lib/utils');
 
-/** {@link module:orc/version} */
+/** {@link module:veranet/version} */
 module.exports.version = require('./lib/version');
 
-/** {@link module:orc/logger} */
+/** {@link module:veranet/logger} */
 module.exports.logger = require('./lib/logger');
