@@ -4,11 +4,8 @@
 
 const async = require('async');
 const program = require('commander');
-const bytes = require('bytes');
 const hdkey = require('hdkey');
 const spartacus = require('kad-spartacus');
-const onion = require('kad-onion');
-const ms = require('ms');
 const bunyan = require('bunyan');
 const RotatingLogStream = require('bunyan-rotating-file-stream');
 const fs = require('fs');
@@ -18,6 +15,8 @@ const options = require('./config');
 const npid = require('npid');
 const daemon = require('daemon');
 const pem = require('pem');
+const levelup = require('levelup');
+const leveldown = require('leveldown');
 
 
 program.version(`
@@ -77,7 +76,7 @@ async function _init() {
   // Initialize private extended key
   xprivkey = fs.readFileSync(config.PrivateExtendedKeyPath).toString();
   parentkey = hdkey.fromExtendedKey(xprivkey)
-                .derive(orc.constants.HD_KEY_DERIVATION_PATH);
+                .derive(veranet.constants.HD_KEY_DERIVATION_PATH);
   childkey = parentkey.deriveChild(parseInt(config.ChildDerivationIndex));
   identity = spartacus.utils.toPublicKeyHash(childkey.publicKey)
                .toString('hex');
@@ -136,6 +135,8 @@ async function _init() {
     logger.debug(err.stack);
     process.exit(1);
   });
+
+  init();
 }
 
 function killChildrenAndExit() {
@@ -155,7 +156,8 @@ function init() {
     port: parseInt(config.NodePublicPort),
     xpub: parentkey.publicExtendedKey,
     index: parseInt(config.ChildDerivationIndex),
-    agent: veranet.version.protocol
+    agent: veranet.version.protocol,
+    chains: []
   };
   const key = fs.readFileSync(config.SSLKeyPath);
   const cert = fs.readFileSync(config.SSLCertificatePath);
@@ -170,7 +172,8 @@ function init() {
     transport,
     contact,
     privateExtendedKey: xprivkey,
-    keyDerivationIndex: parseInt(config.ChildDerivationIndex)
+    keyDerivationIndex: parseInt(config.ChildDerivationIndex),
+    storage: levelup(leveldown(config.EmbeddedDatabaseDirectory))
   });
 
   // Handle any fatal errors
@@ -180,8 +183,8 @@ function init() {
 
   // Use verbose logging if enabled
   if (!!parseInt(config.VerboseLoggingEnabled)) {
-    node.rpc.deserializer.append(new orc.logger.IncomingMessage(logger));
-    node.rpc.serializer.prepend(new orc.logger.OutgoingMessage(logger));
+    node.rpc.deserializer.append(new veranet.logger.IncomingMessage(logger));
+    node.rpc.serializer.prepend(new veranet.logger.OutgoingMessage(logger));
   }
 
   // Cast network nodes to an array
@@ -237,9 +240,8 @@ function init() {
   node.listen(parseInt(config.NodeListenPort), () => {
     logger.info(
       `node listening on local port ${config.NodeListenPort} ` +
-      `and exposed at http://${node.contact.hostname}:${node.contact.port}`
+      `and exposed at https://${node.contact.hostname}:${node.contact.port}`
     );
-    node.updateFlags(true);
     async.retry({
       times: Infinity,
       interval: 60000
