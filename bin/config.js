@@ -23,6 +23,7 @@ module.exports = function(datadir) {
 
     // Database
     EmbeddedDatabaseDirectory: join(datadir, 'veranet.dat'),
+    EmbeddedPeerCachePath: join(datadir, 'peercache'),
 
     // Node Options
     NodePublicPort: '8372',

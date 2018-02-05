@@ -17,6 +17,7 @@ like this:
   + - veranet.prv   (Root/Parent HD identity key)
   + - config        (INI configuration file)
   + - veranet.log   (Daemon log file, rotated periodically)
+  + - peercache     (Cache of known peers)
   + - /veranet.dat  (Directory containing network metadata and DHT entries)
 ```
 
@@ -117,9 +118,15 @@ If `ControlSockEnabled` is enabled, listen on this path.
 
 #### EmbeddedDatabaseDirectory
 
-##### Default: `$HOME/veranet/veranet.dat`
+##### Default: `$HOME/.config/veranet/veranet.dat`
 
 Directory location to store network metadata, such as peers, DHT entries, etc.
+
+#### EmbeddedPeerCachePath
+
+##### Default: `$HOME/.config/veranet/peercache`
+
+File path to store peer contact information for bootstrapping.
 
 #### VerboseLoggingEnabled
 
@@ -129,7 +136,7 @@ More detailed logging of messages sent and received. Useful for debugging.
 
 #### LogFilePath
 
-##### Default: `$HEAD/.config/veranet/veranet.log`
+##### Default: `$HOME/.config/veranet/veranet.log`
 
 Path to write the daemon's log file. Log file will rotate either every 24 hours 
 or when it exceeds 10MB, whichever happens first.

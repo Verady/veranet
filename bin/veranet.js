@@ -205,6 +205,7 @@ function init() {
     contact,
     privateExtendedKey: xprivkey,
     keyDerivationIndex: parseInt(config.ChildDerivationIndex),
+    peerCacheFilePath: config.EmbeddedPeerCachePath,
     storage: levelup(leveldown(config.EmbeddedDatabaseDirectory))
   });
 
@@ -225,7 +226,6 @@ function init() {
   }
 
   async function joinNetwork(callback) {
-    let entry = null;
     let peers = config.NetworkBootstrapNodes.concat(
       await node.getBootstrapCandidates()
     );
@@ -246,18 +246,10 @@ function init() {
     }
 
     logger.info(`joining network from ${peers.length} seeds`);
-    async.detectSeries(peers, (seed, done) => {
-      logger.info(`requesting identity information from ${seed}`);
-      node.identifyService(seed, (err, contact) => {
-        if (err) {
-          logger.error(`failed to identify seed ${seed} (${err.message})`);
-          done(null, false);
-        } else {
-          entry = contact;
-          node.join(contact, (err) => {
-            done(null, (err ? false : true) && node.router.size > 1);
-          });
-        }
+    async.detectSeries(peers, (url, done) => {
+      const contact = veranet.utils.parseContactURL(url);
+      node.join(contact, (err) => {
+        done(null, (err ? false : true) && node.router.size > 1);
       });
     }, (err, result) => {
       if (!result) {
