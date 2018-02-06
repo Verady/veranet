@@ -1,7 +1,5 @@
 ---
 
-# [![Veranet](https://avatars1.githubusercontent.com/u/24233077)](https://verady.com)
-
 Veranet is a decentralized platform for multi-currency blockchain accounting. 
 
 [![Build Status](https://img.shields.io/travis/verady/veranet.svg?style=flat-square)](https://travis-ci.org/verady/veranet) | 
