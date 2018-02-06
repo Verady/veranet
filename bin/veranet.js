@@ -160,8 +160,10 @@ function registerControlInterface() {
 
   controller = new boscar.Server({
     PROTOCOL_INFO: function(callback) {
-      const peers = [], dump = this.router.getClosestContactsToKey(root,
-        kad.contants.K * kad.constants.B);
+      logger.info('received PROTOCOL_INFO via controller');
+
+      const peers = [], dump = node.router.getClosestContactsToKey(identity,
+        kad.constants.K * kad.constants.B);
 
       for (let peer of dump) {
         peers.push(peer);
@@ -170,17 +172,20 @@ function registerControlInterface() {
       callback(null, {
         versions: veranet.version,
         identity: identity.toString('hex'),
-        contact,
+        contact: node.contact,
         peers
       });
     },
     CREATE_SNAPSHOT: function(options, callback) {
+      logger.info('received CREATE_SNAPSHOT via controller');
       node.createSnapshot(options, callback);
     },
     REGISTER_MODULE: function(chain, endpoint, callback) {
+      logger.info('received REGISTER_MODULE via controller');
       node.registerModule(chain, endpoint, callback);
     },
     DEREGISTER_MODULE: function(chain, callback) {
+      logger.info('received DEREGISTER_MODULE via controller');
       node.deregisterModule(chain, callback);
     }
   });
