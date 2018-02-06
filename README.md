@@ -54,6 +54,9 @@ for more information. If you prefer to install Veranet manually, see the guide f
 {@tutorial install}. Once installed, simply run `veranet` with an optional 
 configuration file using the `--config <path/to/config>` option.
 
+> Note, the `latest` tag on Docker Hub is pointed to the latest stable *tag*. 
+> If you'd like the bleeding edge updates, use the `unstable` tag.
+
 #### Automatic Security Updates
 
 When running the Veranet server installation with Docker, you can configure your 
