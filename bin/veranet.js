@@ -159,11 +159,29 @@ function registerControlInterface() {
   'ControlSock and ControlPort cannot both be enabled');
 
   controller = new boscar.Server({
-    AUDIT_SELECTION: function(options, callback) {
+    PROTOCOL_INFO: function(callback) {
+      const peers = [], dump = this.router.getClosestContactsToKey(root,
+        kad.contants.K * kad.constants.B);
+
+      for (let peer of dump) {
+        peers.push(peer);
+      }
+
+      callback(null, {
+        versions: veranet.version,
+        identity: identity.toString('hex'),
+        contact,
+        peers
+      });
+    },
+    CREATE_SNAPSHOT: function(options, callback) {
       node.createSnapshot(options, callback);
     },
     REGISTER_MODULE: function(chain, endpoint, callback) {
       node.registerModule(chain, endpoint, callback);
+    },
+    DEREGISTER_MODULE: function(chain, callback) {
+      node.deregisterModule(chain, callback);
     }
   });
 
