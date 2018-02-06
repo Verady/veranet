@@ -2,8 +2,8 @@
 
 Veranet is a decentralized platform for multi-currency blockchain accounting. 
 
-[![Build Status](https://img.shields.io/travis/verady/veranet.svg?style=flat-square)](https://travis-ci.org/verady/veranet) | 
-[![Test Coverage](https://img.shields.io/coveralls/verady/veranet.svg?style=flat-square)](https://coveralls.io/r/verady/veranet) | 
+[![Build Status](https://img.shields.io/travis/Verady/veranet.svg?style=flat-square)](https://travis-ci.org/Verady/veranet) | 
+[![Test Coverage](https://img.shields.io/coveralls/Verady/veranet.svg?style=flat-square)](https://coveralls.io/r/Verady/veranet) | 
 [![Node Package](https://img.shields.io/npm/v/@verady/veranet.svg?style=flat-square)](https://www.npmjs.com/package/@verady/veranet) | 
 [![Docker Hub](https://img.shields.io/docker/pulls/verady/veranet.svg?style=flat-square)](https://hub.docker.com/r/verady/veranet) | 
 [![License (AGPL-3.0)](https://img.shields.io/badge/license-AGPL3.0-blue.svg?style=flat-square)](https://raw.githubusercontent.com/verady/veranet/master/LICENSE)
