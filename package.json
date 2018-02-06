@@ -12,9 +12,8 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "npm run unit-tests && npm run integration-tests && npm run e2e-tests && npm run linter",
+    "test": "npm run unit-tests && npm run e2e-tests && npm run linter",
     "unit-tests": "mocha test/*.unit.js",
-    "integration-tests": "mocha test/*.integration.js",
     "e2e-tests": "mocha test/*.e2e.js",
     "coverage": "istanbul cover _mocha -- --recursive",
     "linter": "eslint ./index.js ./lib ./test",
