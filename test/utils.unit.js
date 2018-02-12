@@ -7,6 +7,37 @@ const version = require('../lib/version');
 
 describe('@module utils', function() {
 
+  describe('@function getSelectionRoot', function() {
+
+    it('should return the correct merkle root', function() {
+      const root = utils.getSelectionRoot([
+        { address: '1234567890', from: 1234567890, to: 9234567890 },
+        { address: '1234567890', from: 1234567890, to: 9234567890 },
+        { address: '0987654321', from: 2345678901, to: 9234567890 },
+        { address: 'abcdefghij', from: 3456789012, to: 9234567890 },
+      ]);
+      expect(root).to.equal(
+        'dfbf242b82369c83cc501c62c3d34ecac086523f8b3e5c379671077dee13fc8a'
+      );
+    });
+
+  });
+
+  describe('@function parseContactURL', function() {
+
+    it('should return the contact object', function() {
+      const contact1 = utils.parseContactURL('https://hostname:8080');
+      const contact2 = utils.parseContactURL('https://hostname:8080/#nodeid');
+      expect(contact1[0]).to.equal('0000000000000000000000000000000000000000');
+      expect(contact1[1].hostname).to.equal('hostname')
+      expect(contact1[1].port).to.equal('8080');
+      expect(contact2[0]).to.equal('nodeid');
+      expect(contact2[1].hostname).to.equal('hostname')
+      expect(contact2[1].port).to.equal('8080');
+    });
+
+  });
+
   describe('@function isCompatibleVersion', function() {
 
     it('should be compatible (same version)', function() {
