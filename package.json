@@ -64,6 +64,7 @@
     "ink-docstrap": "github:bookchin/docstrap",
     "istanbul": "^1.1.0-alpha.1",
     "jsdoc": "^3.4.0",
+    "memdown": "^2.0.0",
     "mocha": "^2.2.4",
     "rimraf": "^2.6.1",
     "sinon": "^2.4.1"
