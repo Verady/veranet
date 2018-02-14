@@ -11,12 +11,12 @@ kad.constants.T_RESPONSETIMEOUT = 90000; // NB: Testing only!
 
 describe('@module veranet (end-to-end)', function() {
 
-  const NUM_NODES = 12;
+  const NUM_NODES = 6;
   const nodes = [];
 
   before(function(done) {
     this.timeout(12000);
-    netgen(12, (n) => {
+    netgen(NUM_NODES, (n) => {
       n.forEach((node) => nodes.push(node));
       async.eachSeries(nodes, (n, done) => {
         n.listen(n.contact.port, n.contact.hostname, done);
@@ -167,7 +167,7 @@ describe('@module veranet (end-to-end)', function() {
         }
       });
     }
-    async.each(nodes.slice(0, 8), (node, next) => {
+    async.each(nodes.slice(0, 4), (node, next) => {
       const module = module1();
       module.listen(0, '127.0.0.1', () => {
         const port = module.server.address().port;
@@ -175,7 +175,7 @@ describe('@module veranet (end-to-end)', function() {
       });
     }, (err) => {
       expect(err).to.equal(null);
-      async.each(nodes.slice(8), (node, next) => {
+      async.each(nodes.slice(4), (node, next) => {
         const module = module2();
         module.listen(0, '127.0.0.1', () => {
           const port = module.server.address().port;
@@ -196,8 +196,8 @@ describe('@module veranet (end-to-end)', function() {
     const node = nodes[nodes.length - 1];
     node.rediscover(() => {
       node.createSnapshot({
-        pool: 11,
-        consistency: 7,
+        pool: 5,
+        consistency: 3,
         chain: 'BTC',
         query: [
           {

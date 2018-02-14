@@ -23,6 +23,9 @@ describe('@class Node', function() {
     if (fs.existsSync('/tmp/vera-test.sock')) {
       fs.unlinkSync('/tmp/vera-test.sock');
     }
+    if (fs.existsSync('/tmp/veranet_peer_cache')) {
+      fs.unlinkSync('/tmp/veranet_peer_cache');
+    }
   });
 
   describe('@constructor', function() {
