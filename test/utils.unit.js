@@ -17,7 +17,7 @@ describe('@module utils', function() {
         { address: 'abcdefghij', from: 3456789012, to: 9234567890 },
       ]);
       expect(root).to.equal(
-        'dfbf242b82369c83cc501c62c3d34ecac086523f8b3e5c379671077dee13fc8a'
+        '546f22f4b6a8f6b1d2a9e0399e5b47ff9ed2e0be'
       );
     });
 

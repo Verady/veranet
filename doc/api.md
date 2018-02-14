@@ -97,7 +97,7 @@ client.connect('path/to/veranet.sock');
 
 // When connected, register our module and disconnect from the controller
 client.on('ready', () => {
-  client.invoke('REGISTER_MODULE', ['BTC', '/tmp/btcchainmod.sock'], () => {
+  client.invoke('REGISTER_MODULE', ['BTC', 'unix:///tmp/btcchainmod.sock'], () => {
     client.socket.close();
   });
 });

@@ -3,7 +3,11 @@
 const { expect } = require('chai');
 const async = require('async');
 const netgen = require('./fixtures/node-generator');
+const boscar = require('boscar');
+const kad = require('kad');
 
+
+kad.constants.T_RESPONSETIMEOUT = 60000; // NB: Testing only!
 
 describe('@module veranet (end-to-end)', function() {
 
@@ -49,12 +53,167 @@ describe('@module veranet (end-to-end)', function() {
     });
   });
 
-  it('should register the chain modules with nodes', function() {
-    // TODO
+  it('should register the chain modules with nodes', function(done) {
+    this.timeout(120000);
+    const report1 = [
+      {
+        address: '1234567890abcdefghijklmnopqrstuvwxyz',
+        from: 0,
+        to: 100000,
+        transactions: [
+          {
+            tx: {
+              hash: 'abcdefghijklmnopqrstuvwxyz',
+              from: [
+                {
+                  address: '0987654321abcdefghijklmnopqrstuvwxyz',
+                  amounts: [
+                    {
+                      symbol: 'BTC',
+                      amount: 600,
+                      decimals: 0
+                    }
+                  ]
+                }
+              ],
+              to: [
+                {
+                  address: '1234567890abcdefghijklmnopqrstuvwxyz',
+                  amounts: [
+                    {
+                      symbol: 'BTC',
+                      amount: 600,
+                      decimals: 0,
+                    }
+                  ]
+                }
+              ],
+              blockNumber: 501,
+              blockHash: 'abcdefghijklmnopqrstuvwxyz',
+              fee: {
+                amounts: [
+                  {
+                    symbol: 'BTC',
+                    amount: 1
+                  }
+                ]
+              }
+            },
+            meta: {}
+          }
+        ]
+      }
+    ];
+    const report2 = [
+      {
+        address: '1234567890abcdefghijklmnopqrstuvwxyz',
+        from: 0,
+        to: 100000,
+        transactions: [
+          {
+            tx: {
+              hash: 'abcdefghijklmnopqrstuvwxyz',
+              from: [
+                {
+                  address: '0987654321abcdefghijklmnopqrstuvwxyz',
+                  amounts: [
+                    {
+                      symbol: 'BTC',
+                      amount: 500,
+                      decimals: 0
+                    }
+                  ]
+                }
+              ],
+              to: [
+                {
+                  address: '1234567890abcdefghijklmnopqrstuvwxyz',
+                  amounts: [
+                    {
+                      symbol: 'BTC',
+                      amount: 500,
+                      decimals: 0,
+                    }
+                  ]
+                }
+              ],
+              blockNumber: 500,
+              blockHash: 'abcdefghijklmnopqrstuvwxyz',
+              fee: {
+                amounts: [
+                  {
+                    symbol: 'BTC',
+                    amount: 1
+                  }
+                ]
+              }
+            },
+            meta: {}
+          }
+        ]
+      }
+    ];
+    function module1() {
+      return new boscar.Server({
+        AUDIT_SELECTION: function(selection, callback) {
+          callback(null, report1);
+        }
+      });
+    }
+    function module2() {
+      return new boscar.Server({
+        AUDIT_SELECTION: function(selection, callback) {
+          callback(null, report2);
+        }
+      });
+    }
+    async.each(nodes.slice(0, 8), (node, next) => {
+      const module = module1();
+      module.listen(0, '127.0.0.1', () => {
+        const port = module.server.address().port;
+        node.registerModule('BTC', `tcp://localhost:${port}`, next);
+      });
+    }, (err) => {
+      expect(err).to.equal(null);
+      async.each(nodes.slice(8), (node, next) => {
+        const module = module2();
+        module.listen(0, '127.0.0.1', () => {
+          const port = module.server.address().port;
+          node.registerModule('BTC', `tcp://localhost:${port}`, next);
+        });
+      }, (err) => {
+        expect(err).to.equal(null);
+        nodes.forEach(n => {
+          expect(n.contact.chains.includes('BTC')).to.equal(true);
+        });
+        done();
+      });
+    });
   });
 
-  it('should perform a successful snapshot creation', function() {
-    // TODO
+  it('should perform a successful snapshot creation', function(done) {
+    this.timeout(120000);
+    const node = nodes[nodes.length - 1];
+    node.rediscover(() => {
+      node.createSnapshot({
+        pool: 11,
+        consistency: 7,
+        chain: 'BTC',
+        query: [
+          {
+            address: '1234567890abcdefghijklmnopqrstuvwxyz',
+            from: 0,
+            to: 100000
+          }
+        ]
+      }, function(err, consensus) {
+        expect(err).to.equal(null);
+        expect(consensus[0]).to.equal(
+          'c0fc6c2e1749a7cc853709753f8dda17336aa779e7369ffaa4233441da5ed88c'
+        );
+        done();
+      });
+    });
   });
 
 });

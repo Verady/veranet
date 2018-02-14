@@ -74,7 +74,7 @@ describe('@class Rules', function() {
       rules.createSnapshot(
         {
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'ETH',
             [
               { address: '1234567890', from: 0, to: 500 },
@@ -107,7 +107,7 @@ describe('@class Rules', function() {
       rules.createSnapshot(
         {
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'BTC',
             [
               { address: '1234567890', from: 0, to: 500 },
@@ -135,7 +135,7 @@ describe('@class Rules', function() {
       rules.createSnapshot(
         {
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'BTC',
             [
               { address: '1234567890', from: 0, to: 500 },
@@ -161,7 +161,7 @@ describe('@class Rules', function() {
             {}
           ],
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'BTC',
             [
               { address: '1234567890', from: 0, to: 500 },
@@ -181,7 +181,7 @@ describe('@class Rules', function() {
       const jobs = new Map();
       const rules = new Rules({ jobs });
       jobs.set(
-        '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+        '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
         { workers: new Map() }
       );
       rules.reportSnapshot(
@@ -191,7 +191,7 @@ describe('@class Rules', function() {
             {}
           ],
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'BTC',
             [
               { address: '1234567890', from: 0, to: 500 },
@@ -215,7 +215,7 @@ describe('@class Rules', function() {
         results: []
       });
       jobs.set(
-        '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+        '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
         { workers }
       );
       rules.reportSnapshot(
@@ -225,7 +225,7 @@ describe('@class Rules', function() {
             {}
           ],
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'BTC',
             [
               { address: '1234567890', from: 0, to: 500 },
@@ -252,7 +252,7 @@ describe('@class Rules', function() {
         commit
       });
       jobs.set(
-        '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+        '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
         { workers }
       );
       rules.reportSnapshot(
@@ -262,7 +262,7 @@ describe('@class Rules', function() {
             {}
           ],
           params: [
-            '33b41b7008f89fdc6ab05f235c2429af6d3b9e4c27b3108d626092dd8e074135',
+            '5d0f7e5cf7f4c07ab9ee2f342f77845495c23719',
             'BTC',
             [
               { address: '1234567890', from: 0, to: 500 },

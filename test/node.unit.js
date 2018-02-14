@@ -19,6 +19,12 @@ transport.setMaxListeners(0); // NB: We're going to reuse this for all tests
 
 describe('@class Node', function() {
 
+  before(() => {
+    if (fs.existsSync('/tmp/vera-test.sock')) {
+      fs.unlinkSync('/tmp/vera-test.sock');
+    }
+  });
+
   describe('@constructor', function() {
 
     it('should create a Node instance', function() {
@@ -84,12 +90,6 @@ describe('@class Node', function() {
 
   });
 
-  describe('@method createSnapshot', function() {
-
-    // TODO
-
-  });
-
   describe('@method reportSnapshot', function() {
 
     it('should call AbstractNode#send with args', function(done) {
@@ -127,7 +127,7 @@ describe('@class Node', function() {
       const sock = net.createServer(() => null).listen(0);
       const port = sock.address().port;
       node.registerModule('BTC', `tcp://127.0.0.1:${port}`, function(err) {
-        expect(err).to.equal(undefined);
+        expect(err).to.equal(null);
         const client = node.chains.get('BTC');
         const deregisterModule = sinon.spy(node, 'deregisterModule');
         node.registerModule('BTC', `tcp://127.0.0.1:${port}`, function(err) {
@@ -151,7 +151,7 @@ describe('@class Node', function() {
       });
       const sock = net.createServer(() => null).listen('/tmp/vera-test.sock');
       node.registerModule('BTC', 'unix:///tmp/vera-test.sock', function(err) {
-        expect(err).to.equal(undefined);
+        expect(err).to.equal(null);
         const client = node.chains.get('BTC');
         const deregisterModule = sinon.spy(node, 'deregisterModule');
         client.socket.emit('close');
