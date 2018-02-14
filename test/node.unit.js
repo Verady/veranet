@@ -84,7 +84,7 @@ describe('@class Node', function() {
             nodes[2].includes('0000000000000000000000000000000000000002')
           ).to.equal(true);
           done();
-        }, done);
+        }, done).catch(done);
       }, 30);
     });
 

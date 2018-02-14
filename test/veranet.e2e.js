@@ -192,7 +192,7 @@ describe('@module veranet (end-to-end)', function() {
   });
 
   it('should perform a successful snapshot creation', function(done) {
-    this.timeout(240000);
+    this.timeout(480000);
     const node = nodes[nodes.length - 1];
     node.rediscover(() => {
       node.createSnapshot({
