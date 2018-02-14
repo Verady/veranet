@@ -11,7 +11,11 @@ const bunyan = require('bunyan');
 const net = require('net');
 const sinon = require('sinon');
 const version = require('../lib/version');
+const fs = require('fs');
+const async = require('async');
 
+
+transport.setMaxListeners(0); // NB: We're going to reuse this for all tests
 
 describe('@class Node', function() {
 
@@ -20,7 +24,7 @@ describe('@class Node', function() {
     it('should create a Node instance', function() {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       expect(node).to.be.instanceOf(VeranetNode);
     });
@@ -29,7 +33,54 @@ describe('@class Node', function() {
 
   describe('@method getBootstrapCandidates', function() {
 
-    // TODO
+    before(() => fs.unlinkSync(VeranetNode.DEFAULTS.peerCacheFilePath));
+
+    it('should return a timestamp sorted list of peers', function(done) {
+      const node = new VeranetNode({
+        storage, transport,
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
+      });
+      const peers = [
+        ['0000000000000000000000000000000000000002', {
+          protocol: 'https:',
+          hostname: 'localhost',
+          port: 8080,
+          agent: version.protocol,
+          chains: ['BTC']
+        }],
+        ['0000000000000000000000000000000000000001', {
+          protocol: 'https:',
+          hostname: 'localhost',
+          port: 8080,
+          agent: version.protocol,
+          chains: ['BTC']
+        }],
+        ['0000000000000000000000000000000000000000', {
+          protocol: 'https:',
+          hostname: 'localhost',
+          port: 8080,
+          agent: version.protocol,
+          chains: ['BTC']
+        }]
+      ];
+      async.eachSeries(peers, (peer, next) => {
+        node._updateContact(...peer);
+        setTimeout(next, 10);
+      }, () => {
+        node.getBootstrapCandidates().then(nodes => {
+          expect(
+            nodes[0].includes('0000000000000000000000000000000000000000')
+          ).to.equal(true);
+          expect(
+            nodes[1].includes('0000000000000000000000000000000000000001')
+          ).to.equal(true);
+          expect(
+            nodes[2].includes('0000000000000000000000000000000000000002')
+          ).to.equal(true);
+          done();
+        }, done);
+      }, 30);
+    });
 
   });
 
@@ -44,7 +95,7 @@ describe('@class Node', function() {
     it('should call AbstractNode#send with args', function(done) {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       const send = sinon.stub(node, 'send').callsArg(3);
       const contact = ['identity', {}];
@@ -71,7 +122,7 @@ describe('@class Node', function() {
     it('should register the module and connect to tcp socket', function(done) {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       const sock = net.createServer(() => null).listen(0);
       const port = sock.address().port;
@@ -96,7 +147,7 @@ describe('@class Node', function() {
     it('should register the module and connect to unix socket', function(done) {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       const sock = net.createServer(() => null).listen('/tmp/vera-test.sock');
       node.registerModule('BTC', 'unix:///tmp/vera-test.sock', function(err) {
@@ -115,7 +166,7 @@ describe('@class Node', function() {
     it('should fail to register the module', function(done) {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       node.registerModule('BTC', 'http://127.0.0.1:80', function(err) {
         expect(err.message).to.equal('Invalid endpoint http://127.0.0.1:80');
@@ -126,7 +177,7 @@ describe('@class Node', function() {
     it('should fail to deregister the module', function(done) {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       node.deregisterModule('ETH', function(err) {
         expect(err.message).to.equal('Chain module for ETH is not registered');
@@ -141,7 +192,7 @@ describe('@class Node', function() {
     it('should not insert into router if incompatible version', function(done) {
       const node = new VeranetNode({
         storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
       });
       const c1 = ['0000000000000000000000000000000000000000', {
         agent: '0.0.0'
