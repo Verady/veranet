@@ -107,7 +107,7 @@ describe('@class Node', function() {
         logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
       });
       node.deregisterModule('ETH', function(err) {
-        expect(err.message).to.equal('Chain module for ETH not registered');
+        expect(err.message).to.equal('Chain module for ETH is not registered');
         done();
       });
     });
