@@ -7,7 +7,7 @@ const boscar = require('boscar');
 const kad = require('kad');
 
 
-kad.constants.T_RESPONSETIMEOUT = 60000; // NB: Testing only!
+kad.constants.T_RESPONSETIMEOUT = 90000; // NB: Testing only!
 
 describe('@module veranet (end-to-end)', function() {
 
@@ -35,7 +35,7 @@ describe('@module veranet (end-to-end)', function() {
   });
 
   it('should join all nodes together', function(done) {
-    this.timeout(120000);
+    this.timeout(240000);
     async.eachOfSeries(nodes, (n, i, next) => {
       if (i === 0) {
         next();
@@ -54,7 +54,7 @@ describe('@module veranet (end-to-end)', function() {
   });
 
   it('should register the chain modules with nodes', function(done) {
-    this.timeout(120000);
+    this.timeout(240000);
     const report1 = [
       {
         address: '1234567890abcdefghijklmnopqrstuvwxyz',
@@ -192,7 +192,7 @@ describe('@module veranet (end-to-end)', function() {
   });
 
   it('should perform a successful snapshot creation', function(done) {
-    this.timeout(120000);
+    this.timeout(240000);
     const node = nodes[nodes.length - 1];
     node.rediscover(() => {
       node.createSnapshot({
