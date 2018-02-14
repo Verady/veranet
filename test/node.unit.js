@@ -10,6 +10,7 @@ const transport = new HTTPTransport();
 const bunyan = require('bunyan');
 const net = require('net');
 const sinon = require('sinon');
+const version = require('../lib/version');
 
 
 describe('@class Node', function() {
@@ -40,7 +41,28 @@ describe('@class Node', function() {
 
   describe('@method reportSnapshot', function() {
 
-    // TODO
+    it('should call AbstractNode#send with args', function(done) {
+      const node = new VeranetNode({
+        storage, transport,
+        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+      });
+      const send = sinon.stub(node, 'send').callsArg(3);
+      const contact = ['identity', {}];
+      const snapshot = {
+        root: 'merkleroot',
+        chain: 'chain',
+        selection: []
+      };
+      node.reportSnapshot(contact, snapshot, () => {
+        expect(send.args[0][0]).to.equal('REPORT_SNAPSHOT');
+        expect(send.args[0][1][0]).to.equal('merkleroot');
+        expect(send.args[0][1][1]).to.equal('chain');
+        expect(send.args[0][1][2]).to.equal(snapshot.selection);
+        expect(send.args[0][1][3]).to.equal(null);
+        expect(send.args[0][2]).to.equal(contact);
+        done();
+      });
+    });
 
   });
 
@@ -77,7 +99,7 @@ describe('@class Node', function() {
         logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
       });
       const sock = net.createServer(() => null).listen('/tmp/vera-test.sock');
-      node.registerModule('BTC', `unix:///tmp/vera-test.sock`, function(err) {
+      node.registerModule('BTC', 'unix:///tmp/vera-test.sock', function(err) {
         expect(err).to.equal(undefined);
         const client = node.chains.get('BTC');
         const deregisterModule = sinon.spy(node, 'deregisterModule');
@@ -114,15 +136,28 @@ describe('@class Node', function() {
 
   });
 
-  describe('@method deregisterModule', function() {
-
-    // TODO
-
-  });
-
   describe('@private @method _updateContact', function() {
 
-    // TODO
+    it('should not insert into router if incompatible version', function(done) {
+      const node = new VeranetNode({
+        storage, transport,
+        logger: bunyan.createLogger({ name: 'veranet-test', levels: ['fatal']})
+      });
+      const c1 = ['0000000000000000000000000000000000000000', {
+        agent: '0.0.0'
+      }];
+      const c2 = ['0000000000000000000000000000000000000000', null];
+      const c3 = ['0000000000000000000000000000000000000000', {
+        agent: version.protocol
+      }];
+      node._updateContact(...c1);
+      node._updateContact(...c2);
+      node._updateContact(...c3);
+      setTimeout(() => {
+        expect(node.router.size).to.equal(1);
+        done();
+      }, 10);
+    });
 
   });
 
