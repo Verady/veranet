@@ -7,7 +7,7 @@ const boscar = require('boscar');
 const kad = require('kad');
 
 
-kad.constants.T_RESPONSETIMEOUT = 90000; // NB: Testing only!
+kad.constants.T_RESPONSETIMEOUT = 120000; // NB: Testing only!
 
 describe('@module veranet (end-to-end)', function() {
 
