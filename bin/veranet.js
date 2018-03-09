@@ -180,7 +180,15 @@ function registerControlInterface() {
     },
     CREATE_SNAPSHOT: function(options, callback) {
       logger.info('received CREATE_SNAPSHOT via controller');
-      node.createSnapshot(options, callback);
+      const consensus = new Readable({ objectMode: true, read: () => null });
+      const job = node.createSnapshot(options, onConsensus);
+
+      function onConsensus(err, result) {
+        consensus.push({ error: err ? err.message : null, result });
+        consensus.push(null);
+      }
+
+      callback(null, job.events, consensus);
     },
     REGISTER_MODULE: function(chain, endpoint, callback) {
       logger.info('received REGISTER_MODULE via controller');
