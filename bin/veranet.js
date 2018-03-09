@@ -249,8 +249,8 @@ function init() {
 
   // Use verbose logging if enabled
   if (!!parseInt(config.VerboseLoggingEnabled)) {
-    node.rpc.deserializer.append(new veranet.logger.IncomingMessage(logger));
-    node.rpc.serializer.prepend(new veranet.logger.OutgoingMessage(logger));
+    node.rpc.deserializer.append(new kadence.logger.IncomingMessage(logger));
+    node.rpc.serializer.prepend(new kadence.logger.OutgoingMessage(logger));
   }
 
   // Cast network nodes to an array

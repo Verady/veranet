@@ -53,6 +53,3 @@ module.exports.utils = require('./lib/utils');
 
 /** {@link module:veranet/version} */
 module.exports.version = require('./lib/version');
-
-/** {@link module:veranet/logger} */
-module.exports.logger = require('./lib/logger');
