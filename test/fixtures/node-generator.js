@@ -8,7 +8,8 @@ const bunyan = require('bunyan');
 const veranet = require('../../index');
 const levelup = require('levelup');
 const memdown = require('memdown');
-const kad = require('kad');
+const encoding = require('encoding-down');
+const kadence = require('@kadenceproject/kadence');
 
 let startPort = 45000;
 
@@ -27,15 +28,15 @@ module.exports = function(numNodes, callback) {
       port: startPort++,
       protocol: 'https:'
     };
-    const storage = levelup(memdown('veranet-test'));
+    const storage = levelup(encoding(memdown('veranet-test')));
 
     pem.createCertificate({ days: 1, selfSigned: true }, function(err, keys) {
-      const transport = new kad.HTTPSTransport({
+      const transport = new kadence.HTTPSTransport({
         key: keys.serviceKey,
         cert: keys.certificate
       });
 
-      callback(new veranet.Node({
+      callback(new veranet.VeranetNode({
         contact,
         storage,
         logger,

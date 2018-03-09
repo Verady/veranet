@@ -1,7 +1,7 @@
 'use strict';
 
 const { expect } = require('chai');
-const VeranetNode = require('../lib/node');
+const VeranetNode = require('../lib/node-veranet');
 const levelup = require('levelup');
 const memdown = require('memdown');
 const storage = levelup(memdown('veranet-unit-test'));

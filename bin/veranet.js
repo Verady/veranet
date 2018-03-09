@@ -8,7 +8,7 @@ const assert = require('assert');
 const async = require('async');
 const program = require('commander');
 const hdkey = require('hdkey');
-const spartacus = require('kad-spartacus');
+const kadence = require('@kadenceproject/kadence');
 const bunyan = require('bunyan');
 const RotatingLogStream = require('bunyan-rotating-file-stream');
 const fs = require('fs');
@@ -20,6 +20,7 @@ const daemon = require('daemon');
 const pem = require('pem');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
+const encoding = require('encoding-down');
 const boscar = require('boscar');
 
 
@@ -46,7 +47,6 @@ if (program.datadir && !program.config) {
 }
 
 const config = require('rc')('veranet', options(program.datadir), argv);
-const kad = require('kad');
 
 let xprivkey, parentkey, childkey, identity, logger, controller, node;
 
@@ -54,7 +54,7 @@ let xprivkey, parentkey, childkey, identity, logger, controller, node;
 if (!fs.existsSync(config.PrivateExtendedKeyPath)) {
   fs.writeFileSync(
     config.PrivateExtendedKeyPath,
-    spartacus.utils.toHDKeyFromSeed().privateExtendedKey
+    kadence.utils.toHDKeyFromSeed().privateExtendedKey
   );
 }
 
@@ -82,7 +82,7 @@ async function _init() {
   parentkey = hdkey.fromExtendedKey(xprivkey)
                 .derive(veranet.constants.HD_KEY_DERIVATION_PATH);
   childkey = parentkey.deriveChild(parseInt(config.ChildDerivationIndex));
-  identity = spartacus.utils.toPublicKeyHash(childkey.publicKey)
+  identity = kadence.utils.toPublicKeyHash(childkey.publicKey)
                .toString('hex');
 
   // Initialize logging
@@ -165,7 +165,7 @@ function registerControlInterface() {
       logger.info('received PROTOCOL_INFO via controller');
 
       const peers = [], dump = node.router.getClosestContactsToKey(identity,
-        kad.constants.K * kad.constants.B);
+        kadence.constants.K * kadence.constants.B);
 
       for (let peer of dump) {
         peers.push(peer);
@@ -221,17 +221,17 @@ function init() {
   const ca = config.SSLAuthorityPaths.map(fs.readFileSync);
 
   // Initialize transport adapter
-  const transport = new kad.HTTPSTransport({ key, cert, ca });
+  const transport = new kadence.HTTPSTransport({ key, cert, ca });
 
   // Initialize protocol implementation
-  node = new veranet.Node({
+  node = new veranet.VeranetNode({
     logger,
     transport,
     contact,
     privateExtendedKey: xprivkey,
     keyDerivationIndex: parseInt(config.ChildDerivationIndex),
     peerCacheFilePath: config.EmbeddedPeerCachePath,
-    storage: levelup(leveldown(config.EmbeddedDatabaseDirectory))
+    storage: levelup(encoding(leveldown(config.EmbeddedDatabaseDirectory)))
   });
 
   // Handle any fatal errors

@@ -4,10 +4,10 @@ const { expect } = require('chai');
 const async = require('async');
 const netgen = require('./fixtures/node-generator');
 const boscar = require('boscar');
-const kad = require('kad');
+const kadence = require('@kadenceproject/kadence');
 
 
-kad.constants.T_RESPONSETIMEOUT = 120000; // NB: Testing only!
+kadence.constants.T_RESPONSETIMEOUT = 120000; // NB: Testing only!
 
 describe('@module veranet (end-to-end)', function() {
 
