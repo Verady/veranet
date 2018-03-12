@@ -154,3 +154,15 @@ Maximum number of rotated log files to keep.
 Add a map of network bootstrap nodes to this section to use for discovering 
 other peers. Default configuration should come with a list of known and 
 trusted contacts.
+
+#### EthereumIpcProviderPath
+
+##### Default: `$HOME/.ethereum/geth.ipc`
+
+Sets the path to the IPC socket for communicating with a local Ethereum node.
+
+#### EthereumPaymentAddress
+
+##### Default: `0x0000000000000000000000000000000000000000`
+
+Sets the payment address this node will use to send and accept payments.

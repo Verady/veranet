@@ -76,7 +76,7 @@ describe('@class Node', function() {
         node._updateContact(...peer);
         setTimeout(next, 10);
       }, () => {
-        node.getBootstrapCandidates().then(nodes => {
+        node.rolodex.getBootstrapCandidates().then(nodes => {
           expect(
             nodes[0].includes('0000000000000000000000000000000000000000')
           ).to.equal(true);

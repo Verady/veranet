@@ -18,10 +18,12 @@ const options = require('./config');
 const npid = require('npid');
 const daemon = require('daemon');
 const pem = require('pem');
+const net = require('net');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
 const encoding = require('encoding-down');
 const boscar = require('boscar');
+const Web3 = require('web3');
 
 
 program.version(`
@@ -222,7 +224,8 @@ function init() {
     xpub: parentkey.publicExtendedKey,
     index: parseInt(config.ChildDerivationIndex),
     agent: veranet.version.protocol,
-    chains: []
+    chains: [],
+    ethaddr: config.EthereumPaymentAddress
   };
   const key = fs.readFileSync(config.SSLKeyPath);
   const cert = fs.readFileSync(config.SSLCertificatePath);
@@ -231,8 +234,13 @@ function init() {
   // Initialize transport adapter
   const transport = new kadence.HTTPSTransport({ key, cert, ca });
 
+  // Initialize Ethereum Provider
+  const web3 = new Web3(new Web3.providers.IpcProvider(
+    config.EthereumIpcProviderPath, net));
+
   // Initialize protocol implementation
   node = new veranet.VeranetNode({
+    web3,
     logger,
     transport,
     contact,

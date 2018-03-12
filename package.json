@@ -32,7 +32,7 @@
     "node": "^8.9.3"
   },
   "dependencies": {
-    "@kadenceproject/kadence": "^3.0.1",
+    "@kadenceproject/kadence": "^3.1.1",
     "boscar": "^2.0.0",
     "bunyan": "^1.8.12",
     "bunyan-rotating-file-stream": "^1.6.3",
@@ -51,7 +51,8 @@
     "npid": "^0.4.0",
     "pem": "^1.9.7",
     "rc": "^1.2.1",
-    "semver": "^5.1.0"
+    "semver": "^5.1.0",
+    "web3": "^1.0.0-beta.30"
   },
   "devDependencies": {
     "chai": "^2.2.0",
