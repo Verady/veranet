@@ -19,6 +19,7 @@ describe('@module veranet (end-to-end)', function() {
     netgen(NUM_NODES, (n) => {
       n.forEach((node) => nodes.push(node));
       async.eachSeries(nodes, (n, done) => {
+        n.contact.ethaddr = '0x1111111111111111111111111111111111111111';
         n.listen(n.contact.port, n.contact.hostname, done);
       }, done);
     });
@@ -195,7 +196,7 @@ describe('@module veranet (end-to-end)', function() {
     this.timeout(480000);
     const node = nodes[nodes.length - 1];
     node.rediscover(() => {
-      node.createSnapshot({
+      const job = node.createSnapshot({
         pool: 5,
         consistency: 3,
         chain: 'BTC',
@@ -211,7 +212,13 @@ describe('@module veranet (end-to-end)', function() {
         expect(consensus[0]).to.equal(
           'c0fc6c2e1749a7cc853709753f8dda17336aa779e7369ffaa4233441da5ed88c'
         );
-        done();
+        job.events.on('complete', ([root,, identities]) => {
+          expect(root).to.equal(
+            'c0fc6c2e1749a7cc853709753f8dda17336aa779e7369ffaa4233441da5ed88c'
+          );
+          expect(identities).to.have.lengthOf(4);
+          done();
+        });
       });
     });
   });
