@@ -166,3 +166,9 @@ Sets the path to the IPC socket for communicating with a local Ethereum node.
 ##### Default: `0x0000000000000000000000000000000000000000`
 
 Sets the payment address this node will use to send and accept payments.
+
+#### TestNetworkEnabled
+
+##### Default: `0`
+
+Uses the testnet contract address for payments.

@@ -82,7 +82,7 @@ async function _init() {
   // Initialize private extended key
   xprivkey = fs.readFileSync(config.PrivateExtendedKeyPath).toString();
   parentkey = hdkey.fromExtendedKey(xprivkey)
-                .derive(veranet.constants.HD_KEY_DERIVATION_PATH);
+                .derive(kadence.constants.HD_KEY_DERIVATION_PATH);
   childkey = parentkey.deriveChild(parseInt(config.ChildDerivationIndex));
   identity = kadence.utils.toPublicKeyHash(childkey.publicKey)
                .toString('hex');
@@ -238,8 +238,12 @@ function init() {
   const web3 = new Web3(new Web3.providers.IpcProvider(
     config.EthereumIpcProviderPath, net));
 
+  // Check for testnet flag
+  const testnet = !!parseInt(config.TestNetworkEnabled);
+
   // Initialize protocol implementation
   node = new veranet.VeranetNode({
+    testnet,
     web3,
     logger,
     transport,
@@ -268,7 +272,7 @@ function init() {
 
   async function joinNetwork(callback) {
     let peers = config.NetworkBootstrapNodes.concat(
-      await node.getBootstrapCandidates()
+      await node.rolodex.getBootstrapCandidates()
     );
 
     if (peers.length === 0) {

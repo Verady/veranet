@@ -70,7 +70,8 @@ module.exports = function(datadir) {
 
     // Ethereum Options
     EthereumIpcProviderPath: getEtheruemIpcProviderDefault(),
-    EthereumPaymentAddress: '0x0000000000000000000000000000000000000000'
+    EthereumPaymentAddress: '0x0000000000000000000000000000000000000000',
+    TestNetworkEnabled: '0'
 
   };
 
