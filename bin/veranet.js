@@ -8,7 +8,7 @@ const assert = require('assert');
 const async = require('async');
 const program = require('commander');
 const hdkey = require('hdkey');
-const spartacus = require('kad-spartacus');
+const kadence = require('@kadenceproject/kadence');
 const bunyan = require('bunyan');
 const RotatingLogStream = require('bunyan-rotating-file-stream');
 const fs = require('fs');
@@ -18,9 +18,12 @@ const options = require('./config');
 const npid = require('npid');
 const daemon = require('daemon');
 const pem = require('pem');
+const net = require('net');
 const levelup = require('levelup');
 const leveldown = require('leveldown');
+const encoding = require('encoding-down');
 const boscar = require('boscar');
+const Web3 = require('web3');
 
 
 program.version(`
@@ -46,7 +49,6 @@ if (program.datadir && !program.config) {
 }
 
 const config = require('rc')('veranet', options(program.datadir), argv);
-const kad = require('kad');
 
 let xprivkey, parentkey, childkey, identity, logger, controller, node;
 
@@ -54,7 +56,7 @@ let xprivkey, parentkey, childkey, identity, logger, controller, node;
 if (!fs.existsSync(config.PrivateExtendedKeyPath)) {
   fs.writeFileSync(
     config.PrivateExtendedKeyPath,
-    spartacus.utils.toHDKeyFromSeed().privateExtendedKey
+    kadence.utils.toHDKeyFromSeed().privateExtendedKey
   );
 }
 
@@ -80,9 +82,9 @@ async function _init() {
   // Initialize private extended key
   xprivkey = fs.readFileSync(config.PrivateExtendedKeyPath).toString();
   parentkey = hdkey.fromExtendedKey(xprivkey)
-                .derive(veranet.constants.HD_KEY_DERIVATION_PATH);
+                .derive(kadence.constants.HD_KEY_DERIVATION_PATH);
   childkey = parentkey.deriveChild(parseInt(config.ChildDerivationIndex));
-  identity = spartacus.utils.toPublicKeyHash(childkey.publicKey)
+  identity = kadence.utils.toPublicKeyHash(childkey.publicKey)
                .toString('hex');
 
   // Initialize logging
@@ -165,7 +167,7 @@ function registerControlInterface() {
       logger.info('received PROTOCOL_INFO via controller');
 
       const peers = [], dump = node.router.getClosestContactsToKey(identity,
-        kad.constants.K * kad.constants.B);
+        kadence.constants.K * kadence.constants.B);
 
       for (let peer of dump) {
         peers.push(peer);
@@ -180,7 +182,15 @@ function registerControlInterface() {
     },
     CREATE_SNAPSHOT: function(options, callback) {
       logger.info('received CREATE_SNAPSHOT via controller');
-      node.createSnapshot(options, callback);
+      const consensus = new Readable({ objectMode: true, read: () => null });
+      const job = node.createSnapshot(options, onConsensus);
+
+      function onConsensus(err, result) {
+        consensus.push({ error: err ? err.message : null, result });
+        consensus.push(null);
+      }
+
+      callback(null, job.events, consensus);
     },
     REGISTER_MODULE: function(chain, endpoint, callback) {
       logger.info('received REGISTER_MODULE via controller');
@@ -214,24 +224,34 @@ function init() {
     xpub: parentkey.publicExtendedKey,
     index: parseInt(config.ChildDerivationIndex),
     agent: veranet.version.protocol,
-    chains: []
+    chains: [],
+    ethaddr: config.EthereumPaymentAddress
   };
   const key = fs.readFileSync(config.SSLKeyPath);
   const cert = fs.readFileSync(config.SSLCertificatePath);
   const ca = config.SSLAuthorityPaths.map(fs.readFileSync);
 
   // Initialize transport adapter
-  const transport = new kad.HTTPSTransport({ key, cert, ca });
+  const transport = new kadence.HTTPSTransport({ key, cert, ca });
+
+  // Initialize Ethereum Provider
+  const web3 = new Web3(new Web3.providers.IpcProvider(
+    config.EthereumIpcProviderPath, net));
+
+  // Check for testnet flag
+  const testnet = !!parseInt(config.TestNetworkEnabled);
 
   // Initialize protocol implementation
-  node = new veranet.Node({
+  node = new veranet.VeranetNode({
+    testnet,
+    web3,
     logger,
     transport,
     contact,
     privateExtendedKey: xprivkey,
     keyDerivationIndex: parseInt(config.ChildDerivationIndex),
     peerCacheFilePath: config.EmbeddedPeerCachePath,
-    storage: levelup(leveldown(config.EmbeddedDatabaseDirectory))
+    storage: levelup(encoding(leveldown(config.EmbeddedDatabaseDirectory)))
   });
 
   // Handle any fatal errors
@@ -241,8 +261,8 @@ function init() {
 
   // Use verbose logging if enabled
   if (!!parseInt(config.VerboseLoggingEnabled)) {
-    node.rpc.deserializer.append(new veranet.logger.IncomingMessage(logger));
-    node.rpc.serializer.prepend(new veranet.logger.OutgoingMessage(logger));
+    node.rpc.deserializer.append(new kadence.logger.IncomingMessage(logger));
+    node.rpc.serializer.prepend(new kadence.logger.OutgoingMessage(logger));
   }
 
   // Cast network nodes to an array
@@ -252,7 +272,7 @@ function init() {
 
   async function joinNetwork(callback) {
     let peers = config.NetworkBootstrapNodes.concat(
-      await node.getBootstrapCandidates()
+      await node.rolodex.getBootstrapCandidates()
     );
 
     if (peers.length === 0) {

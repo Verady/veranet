@@ -1,4 +1,7 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
   "env": {
     "node": true,
     "es6": true
@@ -47,11 +50,11 @@
     ],
     "max-statements": [
       2,
-      14
+      16
     ],
     "complexity": [
       2,
-      8
+      6
     ],
     "max-depth": [
       2,
@@ -74,7 +77,6 @@
         }
       }
     }],
-    "space-before-function-paren": [2, "never"],
     "brace-style": [2, "1tbs"]
   }
 }

@@ -1,11 +1,11 @@
 'use strict';
 
 const { expect } = require('chai');
-const VeranetNode = require('../lib/node');
+const VeranetNode = require('../lib/node-veranet');
 const levelup = require('levelup');
 const memdown = require('memdown');
 const storage = levelup(memdown('veranet-unit-test'));
-const { HTTPTransport } = require('kad');
+const { HTTPTransport } = require('@kadenceproject/kadence');
 const transport = new HTTPTransport();
 const bunyan = require('bunyan');
 const net = require('net');
@@ -76,7 +76,7 @@ describe('@class Node', function() {
         node._updateContact(...peer);
         setTimeout(next, 10);
       }, () => {
-        node.getBootstrapCandidates().then(nodes => {
+        node.rolodex.getBootstrapCandidates().then(nodes => {
           expect(
             nodes[0].includes('0000000000000000000000000000000000000000')
           ).to.equal(true);

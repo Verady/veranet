@@ -40,10 +40,10 @@ module.exports = function(config = {}) {
 };
 
 /** {@link Node} */
-module.exports.Node = require('./lib/node');
+module.exports.VeranetNode = require('./lib/node-veranet');
 
 /** {@link Rules} */
-module.exports.Rules = require('./lib/rules');
+module.exports.VeranetRules = require('./lib/rules-veranet');
 
 /** {@link module:veranet/constants} */
 module.exports.constants = require('./lib/constants');
@@ -53,6 +53,3 @@ module.exports.utils = require('./lib/utils');
 
 /** {@link module:veranet/version} */
 module.exports.version = require('./lib/version');
-
-/** {@link module:veranet/logger} */
-module.exports.logger = require('./lib/logger');

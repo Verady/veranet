@@ -3,7 +3,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const version = require('../lib/version');
-const Rules = require('../lib/rules');
+const Rules = require('../lib/rules-veranet');
 
 
 describe('@class Rules', function() {

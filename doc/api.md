@@ -26,10 +26,14 @@ Returns general information about the running daemon.
 #### `CREATE_SNAPSHOT`
 
 Creates a snapshot job and builds a verifier pool of workers and dispactches
-the requests to the network. See {@link Node#createSnapshot}.
+the requests to the network. See {@link VeranetNode#createSnapshot}.
 
 **Params:** `[{ pool, consistency, chain, query: [{ address, from, to }] } }]`  
-**Result:** `[...[...{ transaction }]]`
+**Result:** `[events, consensus]`
+
+> Note that both `events` and `consensus` are returned as stream pointers. 
+> Listen to `events` for per-contact result data as it becomes available. 
+> Listen to `consensus` for finalized snapshot results.
 
 #### `REGISTER_MODULE`
 
