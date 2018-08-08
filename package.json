@@ -1,6 +1,6 @@
 {
   "name": "@verady/veranet",
-  "version": "1.0.0-alpha.2",
+  "version": "2.0.0",
   "description": "veranet protocol implementation and network daemon",
   "main": "index.js",
   "bin": {
@@ -13,9 +13,9 @@
   },
   "scripts": {
     "test": "npm run unit-tests && npm run e2e-tests && npm run linter",
-    "unit-tests": "mocha test/*.unit.js",
-    "e2e-tests": "mocha test/*.e2e.js",
-    "coverage": "istanbul cover _mocha -- --recursive",
+    "unit-tests": "mocha --exit test/*.unit.js",
+    "e2e-tests": "mocha --exit test/*.e2e.js",
+    "coverage": "istanbul cover _mocha -- --exit --recursive",
     "linter": "eslint ./index.js ./lib ./test",
     "generate-docs": "mkdir -p ./jsdoc && rm -r ./jsdoc && jsdoc lib -r -R README.md -u ./doc -c .jsdoc.json --verbose -d ./jsdoc",
     "publish-docs": "gh-pages -d jsdoc --repo git@github.com:verady/veranet.git"
@@ -29,10 +29,10 @@
   "contributors": [],
   "license": "AGPL-3.0",
   "engines": {
-    "node": "^8.9.3"
+    "node": "^8.11.3"
   },
   "dependencies": {
-    "@kadenceproject/kadence": "^3.1.1",
+    "@kadenceproject/kadence": "^4.1.1",
     "boscar": "^2.0.0",
     "bunyan": "^1.8.12",
     "bunyan-rotating-file-stream": "^1.6.3",
@@ -40,30 +40,25 @@
     "daemon": "^1.1.0",
     "encoding-down": "^4.0.0",
     "ip": "^1.1.5",
-    "json-stable-stringify": "^1.0.1",
-    "jsonrpc-lite": "^1.3.0",
     "leveldown": "^3.0.0",
     "levelup": "^2.0.1",
     "merge": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "ms": "^2.0.0",
-    "mtree": "^1.0.0",
     "npid": "^0.4.0",
     "pem": "^1.9.7",
-    "rc": "^1.2.1",
-    "semver": "^5.1.0",
-    "web3": "^1.0.0-beta.30"
+    "rc": "^1.2.8",
+    "semver": "^5.1.0"
   },
   "devDependencies": {
     "chai": "^2.2.0",
-    "coveralls": "^2.11.2",
+    "coveralls": "^3.0.2",
     "eslint": "^3.14.0",
     "gh-pages": "^0.9.0",
     "ink-docstrap": "github:bookchin/docstrap",
     "istanbul": "^1.1.0-alpha.1",
     "jsdoc": "^3.4.0",
     "memdown": "^2.0.0",
-    "mocha": "^2.2.4",
+    "mocha": "^5.2.0",
     "rimraf": "^2.6.1",
     "sinon": "^2.4.1"
   }

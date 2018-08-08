@@ -9,19 +9,6 @@ const { join } = require('path');
 const DEFAULT_DATADIR = join(homedir(), '.config/veranet');
 
 
-function getEtheruemIpcProviderDefault() {
-  switch (process.platform) {
-    case 'linux':
-      return join(homedir(), '.ethereum', 'geth.ipc');
-    case 'darwin':
-      return join(homedir(), 'Library', 'Ethereum', 'geth.ipc');
-    case 'win32':
-      return '\\\\.\\pipe\\geth.ipc';
-    default:
-      throw new Error(`Unsupported platform ${process.platform}`)
-  }
-}
-
 module.exports = function(datadir) {
 
   datadir = datadir || DEFAULT_DATADIR;
@@ -45,6 +32,12 @@ module.exports = function(datadir) {
     NodePublicAddress: '127.0.0.1',
     NodeListenAddress: '0.0.0.0',
 
+    // NAT Traversal
+    TraverseNatEnabled: '0',
+    TraversePortForwardTTL: '0',
+    TraverseReverseTunnelHostname: 'tunnel.bookch.in', // TODO: CHANGE ME
+    TraverseReverseTunnelPort: '8443',
+
     // SSL Certificate
     SSLCertificatePath: join(datadir, 'veranet.crt'),
     SSLKeyPath: join(datadir, 'veranet.key'),
@@ -67,11 +60,6 @@ module.exports = function(datadir) {
     ControlPort: '8373',
     ControlSockEnabled: '1',
     ControlSock: join(datadir, 'veranet.sock'),
-
-    // Ethereum Options
-    EthereumIpcProviderPath: getEtheruemIpcProviderDefault(),
-    EthereumPaymentAddress: '0x0000000000000000000000000000000000000000',
-    TestNetworkEnabled: '0'
 
   };
 

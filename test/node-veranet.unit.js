@@ -8,8 +8,6 @@ const storage = levelup(memdown('veranet-unit-test'));
 const { HTTPTransport } = require('@kadenceproject/kadence');
 const transport = new HTTPTransport();
 const bunyan = require('bunyan');
-const net = require('net');
-const sinon = require('sinon');
 const version = require('../lib/version');
 const fs = require('fs');
 const async = require('async');
@@ -89,103 +87,6 @@ describe('@class Node', function() {
           done();
         }, done).catch(done);
       }, 30);
-    });
-
-  });
-
-  describe('@method reportSnapshot', function() {
-
-    it('should call AbstractNode#send with args', function(done) {
-      const node = new VeranetNode({
-        storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
-      });
-      const send = sinon.stub(node, 'send').callsArg(3);
-      const contact = ['identity', {}];
-      const snapshot = {
-        root: 'merkleroot',
-        chain: 'chain',
-        selection: []
-      };
-      node.reportSnapshot(contact, snapshot, () => {
-        expect(send.args[0][0]).to.equal('REPORT_SNAPSHOT');
-        expect(send.args[0][1][0]).to.equal('merkleroot');
-        expect(send.args[0][1][1]).to.equal('chain');
-        expect(send.args[0][1][2]).to.equal(snapshot.selection);
-        expect(send.args[0][1][3]).to.equal(null);
-        expect(send.args[0][2]).to.equal(contact);
-        done();
-      });
-    });
-
-  });
-
-  describe('@method registerModule | @method deregisterModule', function() {
-
-    it('should register the module and connect to tcp socket', function(done) {
-      const node = new VeranetNode({
-        storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
-      });
-      const sock = net.createServer(() => null).listen(0);
-      const port = sock.address().port;
-      node.registerModule('BTC', `tcp://127.0.0.1:${port}`, function(err) {
-        expect(err).to.equal(null);
-        const client = node.chains.get('BTC');
-        const deregisterModule = sinon.spy(node, 'deregisterModule');
-        node.registerModule('BTC', `tcp://127.0.0.1:${port}`, function(err) {
-          expect(err.message).to.equal(
-            'Chain module for BTC is already registered'
-          );
-          client.emit('error', new Error('Failed'));
-          setImmediate(() => {
-            sock.close();
-            expect(deregisterModule.called).to.equal(true);
-            done();
-          });
-        });
-      });
-    });
-
-    it('should register the module and connect to unix socket', function(done) {
-      const node = new VeranetNode({
-        storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
-      });
-      const sock = net.createServer(() => null).listen('/tmp/vera-test.sock');
-      node.registerModule('BTC', 'unix:///tmp/vera-test.sock', function(err) {
-        expect(err).to.equal(null);
-        const client = node.chains.get('BTC');
-        const deregisterModule = sinon.spy(node, 'deregisterModule');
-        client.socket.emit('close');
-        setImmediate(() => {
-          sock.close();
-          expect(deregisterModule.called).to.equal(true);
-          done();
-        })
-      });
-    });
-
-    it('should fail to register the module', function(done) {
-      const node = new VeranetNode({
-        storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
-      });
-      node.registerModule('BTC', 'http://127.0.0.1:80', function(err) {
-        expect(err.message).to.equal('Invalid endpoint http://127.0.0.1:80');
-        done();
-      });
-    });
-
-    it('should fail to deregister the module', function(done) {
-      const node = new VeranetNode({
-        storage, transport,
-        logger: bunyan.createLogger({ name: 'veranet-test', level: 'fatal' })
-      });
-      node.deregisterModule('ETH', function(err) {
-        expect(err.message).to.equal('Chain module for ETH is not registered');
-        done();
-      });
     });
 
   });

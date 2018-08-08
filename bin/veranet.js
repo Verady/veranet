@@ -23,7 +23,6 @@ const levelup = require('levelup');
 const leveldown = require('leveldown');
 const encoding = require('encoding-down');
 const boscar = require('boscar');
-const Web3 = require('web3');
 
 
 program.version(`
@@ -81,11 +80,12 @@ function _generateSelfSignedCertificate() {
 async function _init() {
   // Initialize private extended key
   xprivkey = fs.readFileSync(config.PrivateExtendedKeyPath).toString();
-  parentkey = hdkey.fromExtendedKey(xprivkey)
-                .derive(kadence.constants.HD_KEY_DERIVATION_PATH);
-  childkey = parentkey.deriveChild(parseInt(config.ChildDerivationIndex));
+  parentkey = hdkey.fromExtendedKey(xprivkey);
+  childkey = parentkey
+    .derive(veranet.constants.HD_KEY_DERIVATION_PATH)
+    .deriveChild(parseInt(config.ChildDerivationIndex));
   identity = kadence.utils.toPublicKeyHash(childkey.publicKey)
-               .toString('hex');
+    .toString('hex');
 
   // Initialize logging
   logger = bunyan.createLogger({
@@ -179,26 +179,6 @@ function registerControlInterface() {
         contact: node.contact,
         peers
       });
-    },
-    CREATE_SNAPSHOT: function(options, callback) {
-      logger.info('received CREATE_SNAPSHOT via controller');
-      const consensus = new Readable({ objectMode: true, read: () => null });
-      const job = node.createSnapshot(options, onConsensus);
-
-      function onConsensus(err, result) {
-        consensus.push({ error: err ? err.message : null, result });
-        consensus.push(null);
-      }
-
-      callback(null, job.events, consensus);
-    },
-    REGISTER_MODULE: function(chain, endpoint, callback) {
-      logger.info('received REGISTER_MODULE via controller');
-      node.registerModule(chain, endpoint, callback);
-    },
-    DEREGISTER_MODULE: function(chain, callback) {
-      logger.info('received DEREGISTER_MODULE via controller');
-      node.deregisterModule(chain, callback);
     }
   });
 
@@ -223,9 +203,7 @@ function init() {
     port: parseInt(config.NodePublicPort),
     xpub: parentkey.publicExtendedKey,
     index: parseInt(config.ChildDerivationIndex),
-    agent: veranet.version.protocol,
-    chains: [],
-    ethaddr: config.EthereumPaymentAddress
+    agent: veranet.version.protocol
   };
   const key = fs.readFileSync(config.SSLKeyPath);
   const cert = fs.readFileSync(config.SSLCertificatePath);
@@ -234,17 +212,8 @@ function init() {
   // Initialize transport adapter
   const transport = new kadence.HTTPSTransport({ key, cert, ca });
 
-  // Initialize Ethereum Provider
-  const web3 = new Web3(new Web3.providers.IpcProvider(
-    config.EthereumIpcProviderPath, net));
-
-  // Check for testnet flag
-  const testnet = !!parseInt(config.TestNetworkEnabled);
-
   // Initialize protocol implementation
   node = new veranet.VeranetNode({
-    testnet,
-    web3,
     logger,
     transport,
     contact,
@@ -253,6 +222,27 @@ function init() {
     peerCacheFilePath: config.EmbeddedPeerCachePath,
     storage: levelup(encoding(leveldown(config.EmbeddedDatabaseDirectory)))
   });
+
+  // Punch through NATs
+  if (!!parseInt(config.TraverseNatEnabled)) {
+    node.traverse = node.plugin(kadence.traverse([
+      new kadence.traverse.UPNPStrategy({
+        mappingTtl: parseInt(config.TraversePortForwardTTL),
+        publicPort: parseInt(node.contact.port)
+      }),
+      new kadence.traverse.NATPMPStrategy({
+        mappingTtl: parseInt(config.TraversePortForwardTTL),
+        publicPort: parseInt(node.contact.port)
+      }),
+      new kadence.traverse.ReverseTunnelStrategy({
+        remoteAddress: config.TraverseReverseTunnelHostname,
+        remotePort: parseInt(config.TraverseReverseTunnelPort),
+        privateKey: node.spartacus.privateKey,
+        secureLocalConnection: true,
+        verboseLogging: parseInt(config.VerboseLoggingEnabled)
+      })
+    ]));
+  }
 
   // Handle any fatal errors
   node.on('error', (err) => {
@@ -322,7 +312,7 @@ function init() {
       }
 
       logger.info(
-        `connected to network via ${entry[0]} ` +
+        `connected to network via ${entry} ` +
         `(http://${entry[1].hostname}:${entry[1].port})`
       );
       logger.info(`discovered ${node.router.size} peers from seed`);

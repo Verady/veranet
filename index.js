@@ -32,7 +32,7 @@ module.exports = function(config = {}) {
     args = args.concat(['--config', config]);
   } else {
     for (let prop in config) {
-      envs[`veranet_${prop}`] = config[prop];
+      opts.env[`veranet_${prop}`] = config[prop];
     }
   }
 
