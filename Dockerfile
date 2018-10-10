@@ -1,8 +1,12 @@
-FROM debian:8
+FROM debian:sid
 LABEL maintainer "gordonh@member.fsf.org"
 RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install wget gnupg
+RUN echo "deb https://dl.bintray.com/rabbitmq/debian sid main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list
+RUN wget -O - "https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc" | apt-key add -
+RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
-RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install wget apt-transport-https gnupg curl libssl-dev git python build-essential
+RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-transport-https curl libssl-dev git python build-essential erlang rabbitmq-server jq
 RUN set -ex \
   && for key in \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
@@ -42,5 +46,6 @@ RUN git clone https://github.com/verady/veranet /root/veranet; \
     cd /root/veranet && npm install --unsafe-perm --production
 VOLUME ["/root/.config/veranet"]
 EXPOSE 8372
-ENTRYPOINT ["node", "/root/veranet/bin/veranet.js"]
-CMD []
+EXPOSE 5672
+COPY script/docker-start.sh start.sh
+CMD ["./start.sh"]
