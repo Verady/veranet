@@ -40,6 +40,7 @@ tell docker to keep it running (even starting automatically on system boot).
 ```
 docker run \
   --publish 8372:8372 \
+  --publish 5672:5672 \
   --volume ~/.config/veranet:/root/.config/veranet \
   --restart always \
   --tty --detach verady/veranet
@@ -56,6 +57,14 @@ configuration file using the `--config <path/to/config>` option.
 
 > Note, the `latest` tag on Docker Hub is pointed to the latest stable *tag*. 
 > If you'd like the bleeding edge updates, use the `unstable` tag.
+
+#### Usage
+
+Once you have a node running, you can connect to it via its control socket 
+(see {tutorial api}). From there you can issue `INFO` commands to return a 
+dump of peers in the routing table including their corresponding AMQP URLs and 
+claimed supported chains. Filter these according to your needs and connect to 
+the associated queues for issuing jobs to the network.
 
 #### Automatic Security Updates
 
