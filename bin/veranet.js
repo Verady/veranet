@@ -163,8 +163,8 @@ function registerControlInterface() {
   'ControlSock and ControlPort cannot both be enabled');
 
   controller = new boscar.Server({
-    PROTOCOL_INFO: function(callback) {
-      logger.info('received PROTOCOL_INFO via controller');
+    INFO: function(callback) {
+      logger.info('received INFO request via controller');
 
       const peers = [], dump = node.router.getClosestContactsToKey(identity,
         kadence.constants.K * kadence.constants.B);
@@ -203,7 +203,9 @@ function init() {
     port: parseInt(config.NodePublicPort),
     xpub: parentkey.publicExtendedKey,
     index: parseInt(config.ChildDerivationIndex),
-    agent: veranet.version.protocol
+    agent: veranet.version.protocol,
+    amqp: config.PublicQueueURI,
+    chains: config.ChainCodes,
   };
   const key = fs.readFileSync(config.SSLKeyPath);
   const cert = fs.readFileSync(config.SSLCertificatePath);
