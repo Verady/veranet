@@ -1,6 +1,6 @@
 {
   "name": "@verady/veranet",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "veranet protocol implementation and network daemon",
   "main": "index.js",
   "bin": {
