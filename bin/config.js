@@ -61,6 +61,12 @@ module.exports = function(datadir) {
     ControlSockEnabled: '1',
     ControlSock: join(datadir, 'veranet.sock'),
 
+    // RabbitMQ AMQP URI
+    PublicQueueURI: 'amqp://localhost:5672',
+
+    // Blockchains Supported
+    ChainCodes: ['BTC', 'ETH']
+
   };
 
   if (!existsSync(join(datadir, 'config'))) {
