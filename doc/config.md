@@ -154,3 +154,15 @@ Maximum number of rotated log files to keep.
 Add a map of network bootstrap nodes to this section to use for discovering 
 other peers. Default configuration should come with a list of known and 
 trusted contacts.
+
+#### PublicQueueURI
+
+##### Default: `amqp://localhost:5672`
+
+Set the public AMQP URI for others to connect to your queue.
+
+#### ChainCodes[]
+
+##### Default: `BTC,ETH`
+
+List of chain codes supported by the queue.
