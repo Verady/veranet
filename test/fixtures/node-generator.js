@@ -9,7 +9,7 @@ const veranet = require('../../index');
 const levelup = require('levelup');
 const memdown = require('memdown');
 const encoding = require('encoding-down');
-const kadence = require('@kadenceproject/kadence');
+const kadence = require('@deadcanaries/kadence');
 
 let startPort = 45000;
 

@@ -4,11 +4,12 @@
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+const secp256k1 = require('secp256k1');
 const assert = require('assert');
 const async = require('async');
 const program = require('commander');
-const hdkey = require('hdkey');
-const kadence = require('@kadenceproject/kadence');
+const kadence = require('@deadcanaries/kadence');
+const crypto = require('crypto');
 const bunyan = require('bunyan');
 const RotatingLogStream = require('bunyan-rotating-file-stream');
 const fs = require('fs');
@@ -49,14 +50,11 @@ if (program.datadir && !program.config) {
 
 const config = require('rc')('veranet', options(program.datadir), argv);
 
-let xprivkey, parentkey, childkey, identity, logger, controller, node;
+let privkey, parentkey, childkey, identity, logger, controller, node;
 
 // Generate a private extended key if it does not exist
-if (!fs.existsSync(config.PrivateExtendedKeyPath)) {
-  fs.writeFileSync(
-    config.PrivateExtendedKeyPath,
-    kadence.utils.toHDKeyFromSeed().privateExtendedKey
-  );
+if (!fs.existsSync(config.PrivateKeyPath)) {
+  fs.writeFileSync(config.PrivateKeyPath, crypto.randomBytes(32));
 }
 
 // Handle certificate generation
@@ -78,14 +76,10 @@ function _generateSelfSignedCertificate() {
 }
 
 async function _init() {
-  // Initialize private extended key
-  xprivkey = fs.readFileSync(config.PrivateExtendedKeyPath).toString();
-  parentkey = hdkey.fromExtendedKey(xprivkey);
-  childkey = parentkey
-    .derive(veranet.constants.HD_KEY_DERIVATION_PATH)
-    .deriveChild(parseInt(config.ChildDerivationIndex));
-  identity = kadence.utils.toPublicKeyHash(childkey.publicKey)
-    .toString('hex');
+  // Initialize private key
+  privkey = fs.readFileSync(config.PrivateKeyPath);
+  let pubkey = secp256k1.publicKeyCreate(privkey);
+  identity = kadence.utils.hash160(pubkey).toString('hex');
 
   // Initialize logging
   logger = bunyan.createLogger({
@@ -201,8 +195,6 @@ function init() {
     hostname: config.NodePublicAddress,
     protocol: 'https:',
     port: parseInt(config.NodePublicPort),
-    xpub: parentkey.publicExtendedKey,
-    index: parseInt(config.ChildDerivationIndex),
     agent: veranet.version.protocol,
     amqp: config.PublicQueueURI,
     chains: config.ChainCodes,
@@ -219,7 +211,7 @@ function init() {
     logger,
     transport,
     contact,
-    privateExtendedKey: xprivkey,
+    privateKey: privkey,
     keyDerivationIndex: parseInt(config.ChildDerivationIndex),
     peerCacheFilePath: config.EmbeddedPeerCachePath,
     storage: levelup(encoding(leveldown(config.EmbeddedDatabaseDirectory)))
@@ -313,10 +305,6 @@ function init() {
         process.exit(1);
       }
 
-      logger.info(
-        `connected to network via ${entry} ` +
-        `(http://${entry[1].hostname}:${entry[1].port})`
-      );
       logger.info(`discovered ${node.router.size} peers from seed`);
     });
   });

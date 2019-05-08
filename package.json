@@ -1,6 +1,6 @@
 {
   "name": "@verady/veranet",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "veranet protocol implementation and network daemon",
   "main": "index.js",
   "bin": {
@@ -25,14 +25,14 @@
     "type": "git",
     "url": "https://github.com/verady/veranet.git"
   },
-  "author": "Gordon Hall <gordonh@member.fsf.org>",
+  "author": "Emery Rose Hall <emery@verady.com>",
   "contributors": [],
   "license": "AGPL-3.0",
   "engines": {
-    "node": "^8.11.3"
+    "node": ">=10.15.0"
   },
   "dependencies": {
-    "@kadenceproject/kadence": "^4.1.5",
+    "@deadcanaries/kadence": "^6.1.4",
     "boscar": "^2.0.0",
     "bunyan": "^1.8.12",
     "bunyan-rotating-file-stream": "^1.6.3",
@@ -42,11 +42,12 @@
     "ip": "^1.1.5",
     "leveldown": "^3.0.0",
     "levelup": "^2.0.1",
-    "merge": "^1.2.0",
+    "merge": "^1.2.1",
     "mkdirp": "^0.5.1",
     "npid": "^0.4.0",
-    "pem": "^1.9.7",
+    "pem": "^1.14.2",
     "rc": "^1.2.8",
+    "secp256k1": "^3.7.0",
     "semver": "^5.1.0"
   },
   "devDependencies": {
@@ -54,9 +55,9 @@
     "coveralls": "^3.0.2",
     "eslint": "^3.14.0",
     "gh-pages": "^0.9.0",
-    "ink-docstrap": "github:bookchin/docstrap",
+    "ink-docstrap": "github:emeryrose/docstrap",
     "istanbul": "^1.1.0-alpha.1",
-    "jsdoc": "^3.4.0",
+    "jsdoc": "^3.6.1",
     "memdown": "^2.0.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.1",

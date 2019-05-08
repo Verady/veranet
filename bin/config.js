@@ -19,8 +19,7 @@ module.exports = function(datadir) {
     DaemonPidFilePath: join(datadir, 'veranet.pid'),
 
     // Identity/Cryptography
-    PrivateExtendedKeyPath: join(datadir, 'veranet.prv'),
-    ChildDerivationIndex: '0',
+    PrivateKeyPath: join(datadir, 'veranet.prv'),
 
     // Database
     EmbeddedDatabaseDirectory: join(datadir, 'veranet.dat'),
@@ -35,7 +34,7 @@ module.exports = function(datadir) {
     // NAT Traversal
     TraverseNatEnabled: '0',
     TraversePortForwardTTL: '0',
-    TraverseReverseTunnelHostname: 'tunnel.bookch.in', // TODO: CHANGE ME
+    TraverseReverseTunnelHostname: 'tunnel.deadcanaries.org',
     TraverseReverseTunnelPort: '8443',
 
     // SSL Certificate

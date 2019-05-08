@@ -5,7 +5,7 @@ const VeranetNode = require('../lib/node-veranet');
 const levelup = require('levelup');
 const memdown = require('memdown');
 const storage = levelup(memdown('veranet-unit-test'));
-const { HTTPTransport } = require('@kadenceproject/kadence');
+const { HTTPTransport } = require('@deadcanaries/kadence');
 const transport = new HTTPTransport();
 const bunyan = require('bunyan');
 const version = require('../lib/version');
@@ -39,9 +39,6 @@ describe('@class Node', function() {
   });
 
   describe('@method getBootstrapCandidates', function() {
-
-    before(() => fs.unlinkSync(VeranetNode.DEFAULTS.peerCacheFilePath));
-
     it('should return a timestamp sorted list of peers', function(done) {
       const node = new VeranetNode({
         storage, transport,

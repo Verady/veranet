@@ -3,7 +3,7 @@
 const { expect } = require('chai');
 const async = require('async');
 const netgen = require('./fixtures/node-generator');
-const kadence = require('@kadenceproject/kadence');
+const kadence = require('@deadcanaries/kadence');
 
 
 kadence.constants.T_RESPONSETIMEOUT = 120000; // NB: Testing only!
